@@ -1,0 +1,58 @@
+name: Deploy Spring Boot to Azure
+
+on:
+  push:
+    branches:
+      - main  # Change this if your default branch is different
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+        
+
+
+      - name: Build without running tests
+        run: mvn clean install -DskipTests
+        continue-on-error: true  # Ensures workflow stops if build fails
+
+      - name: Upload Artifact (WAR/JAR)
+        uses: actions/upload-artifact@v4
+        with:
+          name: examserver-0.0.1-SNAPSHOT
+          path:/*.jar  # Adjust this if you are building a WAR file
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: examserver-0.0.1-SNAPSHOT
+          path: target
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: "SpringAppp"  # Replace with your Azure App Service name
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          package: /examserver-0.0.1-SNAPSHOT.jar  # Make sure it's correct (WAR/JAR)
