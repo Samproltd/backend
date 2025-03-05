@@ -29,13 +29,15 @@ jobs:
 
       - name: Build without running tests
         run: mvn clean install -DskipTests
-        # Removed continue-on-error to stop if build fails
+
+      - name: Verify JAR File
+        run: ls -alh target/examserver-0.0.1-SNAPSHOT.jar  # Ensure the JAR file exists
 
       - name: Upload Artifact (JAR)
         uses: actions/upload-artifact@v4
         with:
           name: examserver-0.0.1-SNAPSHOT
-          path: examserver-0.0.1-SNAPSHOT.jar  # Correct path to JAR file at the root of the repo
+          path: target/examserver-0.0.1-SNAPSHOT.jar  # Ensure the correct path to JAR file
 
   deploy:
     needs: build
@@ -46,7 +48,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: examserver-0.0.1-SNAPSHOT  # Ensure matching name as used in the upload step
-          path: .  # Download the artifact to the root of the project
+          path: ./  # Download to the root of the project
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
