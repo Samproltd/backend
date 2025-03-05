@@ -26,18 +26,16 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-        
-
 
       - name: Build without running tests
         run: mvn clean install -DskipTests
-        continue-on-error: true  # Ensures workflow stops if build fails
+        # Removed continue-on-error to stop if build fails
 
-      - name: Upload Artifact (WAR/JAR)
+      - name: Upload Artifact (JAR)
         uses: actions/upload-artifact@v4
         with:
           name: examserver-0.0.1-SNAPSHOT
-          path:/*.jar  # Adjust this if you are building a WAR file
+          path: examserver-0.0.1-SNAPSHOT.jar  # Correct path to JAR file at the root of the repo
 
   deploy:
     needs: build
@@ -47,12 +45,12 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: examserver-0.0.1-SNAPSHOT
-          path: target
+          name: examserver-0.0.1-SNAPSHOT  # Ensure matching name as used in the upload step
+          path: .  # Download the artifact to the root of the project
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: "SpringAppp"  # Replace with your Azure App Service name
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-          package: /examserver-0.0.1-SNAPSHOT.jar  # Make sure it's correct (WAR/JAR)
+          package: ./examserver-0.0.1-SNAPSHOT.jar  # Correct path to JAR in the root directory
