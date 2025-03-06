@@ -3,7 +3,7 @@ name: Deploy Spring Boot to Azure
 on:
   push:
     branches:
-      - main  # Change this if your default branch is different
+      - main 
 
 jobs:
   build:
@@ -31,13 +31,13 @@ jobs:
         run: mvn clean install -DskipTests
 
       - name: Verify JAR File
-        run: ls -alh target/examserver-0.0.1-SNAPSHOT.jar  # Ensure the JAR file exists
+        run: ls -alh target/*.jar  
 
       - name: Upload Artifact (JAR)
         uses: actions/upload-artifact@v4
         with:
-          name: examserver-0.0.1-SNAPSHOT
-          path: target/examserver-0.0.1-SNAPSHOT.jar  # Ensure the correct path to JAR file
+          name: examserver
+          path: target/examserver-0.0.1-SNAPSHOT.jar  
 
   deploy:
     needs: build
@@ -47,12 +47,12 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: examserver-0.0.1-SNAPSHOT  # Ensure matching name as used in the upload step
-          path: ./  # Download to the root of the project
+          name: examserver
+          path: ./
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "SpringAppp"  # Replace with your Azure App Service name
+          app-name: "SpringAppp"  
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-          package: ./examserver-0.0.1-SNAPSHOT.jar  # Correct path to JAR in the root directory
+          package: "examserver-0.0.1-SNAPSHOT.jar"
