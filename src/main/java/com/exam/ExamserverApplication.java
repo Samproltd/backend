@@ -94,6 +94,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 //import org.springframework.security.crypto.bCrypt.BCryptPasswordEncoder;
+import org.springframework.context.annotation.Profile;
 
 import com.exam.helper.UserFoundException;
 import com.exam.model.Role;
@@ -104,6 +105,7 @@ import com.exam.model.UserType;
 import com.exam.service.UserService;
 
 @SpringBootApplication
+@Profile({"dev", "local"})
 public class ExamserverApplication implements CommandLineRunner {
 
     @Autowired
