@@ -105,7 +105,7 @@ import com.exam.model.UserType;
 import com.exam.service.UserService;
 
 @SpringBootApplication
-@Profile({"dev", "local"})
+//@Profile({"dev", "local"})
 public class ExamserverApplication implements CommandLineRunner {
 
     @Autowired

@@ -1,3 +1,69 @@
+# name: Deploy Spring Boot to Azure
+
+# on:
+#   push:
+#     branches:
+#       - main 
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Set up JDK 17
+#         uses: actions/setup-java@v4
+#         with:
+#           distribution: 'temurin'
+#           java-version: '17'
+
+#       - name: Cache Maven dependencies
+#         uses: actions/cache@v3
+#         with:
+#           path: ~/.m2
+#           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#           restore-keys: |
+#             ${{ runner.os }}-maven-
+
+#       - name: Build without running tests
+#         run: mvn clean install -DskipTests
+
+#       - name: Verify JAR File
+#         run: ls -alh target/*.jar  
+
+#       - name: Upload Artifact (JAR)
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: examserver
+#           path: target/examserver-0.0.1-SNAPSHOT.jar  
+
+#   deploy:
+#     needs: build
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Download Build Artifact
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: examserver
+#           path: ./
+
+#       - name: Deploy to Azure Web App
+#         uses: azure/webapps-deploy@v3
+#         with:
+#           app-name: "SpringAppp"  
+#           publish-profile: ${{ secrets.AZURE_CREDENTIALS }}
+#           package: "examserver-0.0.1-SNAPSHOT.jar"
+   
+
+
+
+
+
+
+
 name: Deploy Spring Boot to Azure
 
 on:
@@ -49,6 +115,23 @@ jobs:
         with:
           name: examserver
           path: ./
+
+      - name: Set up Azure CLI
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            az login --service-principal -u ${{ secrets.AZURE_CREDENTIALS_CLIENT_ID }} -p ${{ secrets.AZURE_CREDENTIALS_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_CREDENTIALS_TENANT_ID }}
+
+      - name: Set App Service Configuration
+        run: |
+          az webapp config appsettings set \
+            --name SpringAppp \
+            --resource-group myapp-springboot \
+            --settings \
+              SPRING_DATASOURCE_URL="jdbc:sqlserver://myapp-springboot.database.windows.net:1433;database=Exam;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30" \
+              SPRING_DATASOURCE_USERNAME="sqladmin@myapp-springboot" \
+              SPRING_DATASOURCE_PASSWORD="${{ secrets.AZURE_SQL_PASSWORD }}"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
