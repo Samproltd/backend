@@ -129,9 +129,11 @@ jobs:
             --name SpringAppp \
             --resource-group myapp-springboot \
             --settings \
-              SPRING_DATASOURCE_URL="jdbc:sqlserver://myapp-springboot.database.windows.net:1433;database=Exam;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30" \
+              SPRING_DATASOURCE_URL="jdbc:sqlserver://myapp-springboot.database.windows.net:1433;database=Exam;
+              encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;
+              loginTimeout=30" \
               SPRING_DATASOURCE_USERNAME="sqladmin@myapp-springboot" \
-              SPRING_DATASOURCE_PASSWORD="${{ secrets.AZURE_SQL_PASSWORD }}"
+              SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD}}"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
