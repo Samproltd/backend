@@ -64,7 +64,6 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-        
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
@@ -78,6 +77,7 @@
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-core-http-netty</artifactId>
+            <version>1.14.0</version>  <!-- ✅ Fixed: Added missing version -->
             <exclusions>
                 <exclusion>
                     <groupId>io.netty</groupId>
