@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.exam.config.JwtUtils;
@@ -23,7 +24,10 @@ import com.exam.model.User;
 import com.exam.service.impl.UserDetailsServiceImpl;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = {"https://exam-portal-angular-fvfraafeaghqc0bd.centralindia-01.azurewebsites.net", "http://localhost:4200"}, 
+             allowedHeaders = {"Authorization", "Content-Type", "X-Requested-With", "Accept"},
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+             allowCredentials = "true")
 public class AuthenticateController {
 
 	@Autowired
