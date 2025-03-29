@@ -3,7 +3,8 @@ name: Deploy Spring Boot to Azure
 on:
   push:
     branches:
-      - main 
+      - main
+      - dev
 
 jobs:
   build:
@@ -16,8 +17,8 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -31,13 +32,13 @@ jobs:
         run: mvn clean install -DskipTests
 
       - name: Verify JAR File
-        run: ls -alh target/*.jar  
+        run: ls -alh target/*.jar
 
       - name: Upload Artifact (JAR)
         uses: actions/upload-artifact@v4
         with:
           name: examserver
-          path: target/examserver-0.0.1-SNAPSHOT.jar  
+          path: target/examserver-0.0.1-SNAPSHOT.jar
 
   deploy:
     needs: build
@@ -53,23 +54,15 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "SpringAppp"  
+          app-name: "SpringAppp"
           publish-profile: ${{ secrets.AZURE_CREDENTIALS }}
           package: "examserver-0.0.1-SNAPSHOT.jar"
-   
-
-
-
-
-
-
-
 # name: Deploy Spring Boot to Azure
 
 # on:
 #   push:
 #     branches:
-#       - main 
+#       - main
 
 # jobs:
 #   build:
@@ -97,13 +90,13 @@ jobs:
 #         run: mvn clean install -DskipTests
 
 #       - name: Verify JAR File
-#         run: ls -alh target/*.jar  
+#         run: ls -alh target/*.jar
 
 #       - name: Upload Artifact (JAR)
 #         uses: actions/upload-artifact@v4
 #         with:
 #           name: examserver
-#           path: target/examserver-0.0.1-SNAPSHOT.jar  
+#           path: target/examserver-0.0.1-SNAPSHOT.jar
 
 #   deploy:
 #     needs: build
@@ -138,6 +131,6 @@ jobs:
 #       - name: Deploy to Azure Web App
 #         uses: azure/webapps-deploy@v3
 #         with:
-#           app-name: "SpringAppp"  
+#           app-name: "SpringAppp"
 #           publish-profile: ${{ secrets.AZURE_CREDENTIALS }}
 #           package: "examserver-0.0.1-SNAPSHOT.jar"

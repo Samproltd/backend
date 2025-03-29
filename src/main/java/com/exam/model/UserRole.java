@@ -3,6 +3,7 @@ package com.exam.model;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "user_roles")
 public class UserRole {
 
     @Id

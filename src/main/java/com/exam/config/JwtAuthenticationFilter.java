@@ -31,7 +31,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-
+        // Add CORS headers for all responses
+        String origin = request.getHeader("Origin");
+        if (origin != null) {
+            // Allow the specific origin that sent the request
+            response.setHeader("Access-Control-Allow-Origin", origin);
+        }
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, X-Requested-With, remember-me");
+        
+        // Handle preflight OPTIONS requests
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return; // Return immediately for OPTIONS requests
+        }
+        
+        // For JSON requests, ensure we have appropriate content type
+        if (request.getContentType() != null && request.getContentType().contains("application/json")) {
+            response.setContentType("application/json");
+        }
+        
+        // Normal request processing - JWT authentication
         final String requestTokenHeader = request.getHeader("Authorization");
         System.out.println(requestTokenHeader);
         String username = null;
@@ -71,7 +93,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-
     }
 
 
