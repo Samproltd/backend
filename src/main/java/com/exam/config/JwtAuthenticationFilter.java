@@ -48,6 +48,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return; // Return immediately for OPTIONS requests
         }
         
+        // For JSON requests, ensure we have appropriate content type
+        if (request.getContentType() != null && request.getContentType().contains("application/json")) {
+            response.setContentType("application/json");
+        }
+        
         // Normal request processing - JWT authentication
         final String requestTokenHeader = request.getHeader("Authorization");
         System.out.println(requestTokenHeader);

@@ -1,6 +1,7 @@
 package com.exam.controller;
 
 import java.security.Principal;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,30 +44,29 @@ public class AuthenticateController {
 
 	@PostMapping("/generate-token")
 	public ResponseEntity<?> generateToken(@RequestBody JwtRequest jwtRequest) throws Exception {
-
 		try {
-
 			authenticate(jwtRequest.getUsername(), jwtRequest.getPassword());
-
 		} catch (UserNotFoundException e) {
 			e.printStackTrace();
-			throw new Exception("User not found ");
+			return ResponseEntity
+				.badRequest()
+				.body(Map.of("message", "User not found", "error", e.getMessage()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity
+				.badRequest()
+				.body(Map.of("message", "Authentication failed", "error", e.getMessage()));
 		}
 
 		///////////// authenticate
-
 		UserDetails userDetails = this.userDetailsService.loadUserByUsername(jwtRequest.getUsername());
 		String token = this.jwtUtils.generateToken(userDetails);
 		return ResponseEntity.ok(new JwtResponse(token));
-
 	}
 
 	private void authenticate(String username, String password) throws Exception {
-
 		try {
-
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-
 		} catch (DisabledException e) {
 			throw new Exception("USER DISABLED " + e.getMessage());
 		} catch (BadCredentialsException e) {
